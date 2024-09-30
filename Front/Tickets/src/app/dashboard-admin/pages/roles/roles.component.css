@@ -1,0 +1,16 @@
+.text-left {
+    text-align: left !important;
+}
+
+.tablePermissions tr:not(:has(.sihay)) {
+    display: none;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center; /* Alinear verticalmente el contenido */
+  }
+  
+  .checkbox-input {
+    margin-left: auto; /* Mover el checkbox a la derecha */
+  }

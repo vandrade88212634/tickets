@@ -1,0 +1,29 @@
+
+.bannerImg {
+    background-image: url(../../../assets/img/login.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    min-height: calc(100vh);
+}
+
+.divForm {
+    padding: 50px 100px;
+}
+
+@media (max-width: 767px) {
+    .bannerImg {
+        background-image: url(../../../assets/img/banner2.png);
+        height: 150px !important;
+        background-position: center;
+        min-height: 150px;
+    }
+
+    .divForm {
+        padding: 19px 50px 0 ;
+    }
+
+    .title {
+        text-align: center;
+    }
+}

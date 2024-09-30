@@ -1,0 +1,62 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="left-panel">
+                <!-- Imagen -->
+                <img src="../../../assets/img/login.png" alt="Imagen de inicio de sesión" id="desktop-actions">
+                <img src="../../../assets/img/banner login 150.png" style="min-height: 150px;" alt="Imagen de inicio de sesión" id="mobile-actions">
+            </div>
+        </div>
+        <div class="col-md-6 custom-centered">
+            <div class="right-panel">
+                <!-- Contenedor del formulario de inicio de sesión -->
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                    <p class="title-login" style="text-align: center;">Iniciar sesión</p>
+                    <div class="form-floating mb-3">
+                        <mat-form-field class="input-full-width">
+                            <mat-label>Usuario</mat-label>
+                            <span matTextPrefix><mat-icon matSuffix>person</mat-icon></span>
+                            <input type="text" id="user" formControlName="user" matInput placeholder="Usuario">
+                        </mat-form-field>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <mat-form-field class="input-full-width">
+                            <mat-label>Contraseña</mat-label>
+                            <span matTextPrefix><mat-icon matSuffix>lock</mat-icon></span>
+                            <input type="password" #passwordInput id="password" formControlName="password" matInput
+                                placeholder="Contraseña">
+                            <mat-icon matSuffix *ngIf="loginForm.valid"
+                                (click)="togglePasswordVisibility(passwordInput)">visibility</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" style="background-color: #6EB337;"
+                            id="exampleCheck1" formControlName="remind" checked>
+                        <label class="form-check-label forgot" for="exampleCheck1">Recordarme</label>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" [disabled]="!loginForm.valid" class="btn btn-success"
+                            style="background-color: #006633;">Ingresar</button>
+                    </div>
+                    <div class="mb-3"><br>
+                        <p class="text-forgot" style="text-align: center;"><a
+                                routerLink="/restablecer-contrasena">¿Olvidaste tu contraseña?</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #errorPassword>
+    <p class="text-forgot">Usuario y/o contraseña incorrectos. Por favor, inténtalo de nuevo. Te quedan 2 intentos</p>
+</ng-template>
+<ng-template #errorPassword2>
+    <p class="text-forgot">Usuario y/o contraseña incorrectos. Por favor, inténtalo de nuevo. Te queda 1 intento.</p>
+</ng-template>
+<ng-template #errorPassword3>
+    <p class="text-forgot">Por motivos de seguridad, tu cuenta se ha bloqueado. Para desbloquearla, <a
+            routerLink="/restablecer-contrasena" class="respass">restablece contraseña.</a></p>
+</ng-template>
+<ng-template #errorPassword3>
+    <p class="text-forgot">El usuario no existe</p>
+</ng-template>

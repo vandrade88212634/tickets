@@ -1,0 +1,275 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-7">
+            <p class="title">Roles</p>
+        </div>
+        <div class="col-md-5">
+            <div class="row align-items-center">
+                <div class="col-md-8 mb-3">
+                    <mat-form-field appearance="outline" class="mb-0">
+                        <mat-label>Buscar</mat-label>
+                        <mat-icon matPrefix>search</mat-icon>
+                        <input matInput type="text" placeholder="Buscar" [(ngModel)]="searchTerm" (input)="onSearch()" />
+                    </mat-form-field>
+                </div>
+              
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row" style="padding-top: 2%;" class="table-responsive">
+        <mat-progress-bar mode="indeterminate" *ngIf="!isLoadingResults"></mat-progress-bar>
+        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+
+            <!-- ID Column -->
+            <ng-container matColumnDef="accions">
+                <th mat-header-cell *matHeaderCellDef class="th"> Acciones </th>
+                <td mat-cell *matCellDef="let element"> 
+                    <mat-icon id="desktop-actions" matSuffix style="color: blue; cursor: pointer;"
+                        (click)="clickView(element)">visibility</mat-icon>
+                   
+                    <mat-icon matSuffix style="color: green; cursor: pointer;" id="mobile-actions"
+                            (click)="modalAccions(element)">more_vert</mat-icon>
+                </td>
+            </ng-container>
+
+            <!-- ID Column -->
+            <ng-container matColumnDef="rol">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="th"> Rol </th>
+                <td mat-cell *matCellDef="let element" class="td"> {{element.idRol}} </td>
+            </ng-container>
+
+            <!-- Progress Column -->
+            <ng-container matColumnDef="descripcion">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header class="th"> Descripción </th>
+                <td mat-cell *matCellDef="let element" class="td"> {{element.descripcion}} </td>
+            </ng-container>
+
+          
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <!-- Row shown when there is no matching data. -->
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="4" class="td">Datos no encontrados </td>
+            </tr>
+        </table>
+        <mat-paginator  (page)="onPageChange($event)"  [length]="resultsLength" [pageSize]="5" [pageSizeOptions]="[5, 10, 25, 100]"
+                aria-label="Select page"></mat-paginator>
+    </div>
+</div>
+
+
+<ng-template #edit>
+    <h3>Información general</h3>
+    <p class="text-left">Por favor, ingrese el nombre que desee asignar a este nuevo rol. Así mismo, proporcione una
+        descripción concisa y
+        comprensible que detalle las responsabilidades y funciones asociadas a este rol.</p>
+    
+
+    <form [formGroup]="rolForm" (ngSubmit)="onSubmit()">
+        <div class="form-floating mb-3">
+            <mat-form-field class="input-full-width">
+                <mat-label>Nombre del Rol</mat-label>
+                <input type="text" id="user" formControlName="name" matInput placeholder="Rol 1">
+                <mat-error *ngIf="rolForm.get('name')?.hasError('required')">Campo requerido</mat-error>
+                <mat-error *ngIf="rolForm.get('name')?.hasError('minlength')">El campo debe tener al menos 3 caracteres</mat-error>
+                <mat-error *ngIf="rolForm.get('name')?.hasError('maxlength')">El campo debe tener máximo 40 caracteres</mat-error>
+                <mat-error *ngIf="rolForm.get('name')?.hasError('invalidChars')">El campo debe tener solo caracteres alfanúmericos</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="form-floating mb-3">
+            <mat-form-field class="input-full-width">
+                <mat-label>Descripción</mat-label>
+                <textarea matInput cdkTextareaAutosize matInput type="text" placeholder="name" formControlName="description"></textarea>
+                    <mat-error *ngIf="rolForm.get('description')?.hasError('required')">Campo requerido</mat-error>
+                    <mat-error *ngIf="rolForm.get('description')?.hasError('minlength')">El campo debe tener al menos 3 caracteres</mat-error>
+                    <mat-error *ngIf="rolForm.get('description')?.hasError('maxlength')">El campo debe tener máximo 200 caracteres</mat-error>
+                    <mat-error *ngIf="rolForm.get('description')?.hasError('invalidChars')">El campo debe tener solo caracteres alfanúmericos</mat-error>
+            </mat-form-field>
+            <input type="hidden" formControlName="id">
+        </div>
+
+        <p class="text-left">A continuación, incluye los módulos y asigna los permisos correspondientes a cada uno.
+            Estos permisos determinarán el acceso que el rol tendrá en la plataforma.</p>
+
+        <div class="alnLeft">
+            <button type="button" class="btn btn-outline-success text-btn" (click)="addModule()" >Agregar
+                módulos</button>
+
+        </div>
+
+    </form>
+    <div>
+        <table class="tablePermissions" mat-table [dataSource]="dataModulesRol">
+            <ng-container matColumnDef="accions">
+                <th mat-header-cell *matHeaderCellDef class="th"> Acciones </th>
+                <td mat-cell *matCellDef="let element, let index = index"> 
+                    <mat-icon matSuffix style="color: green; cursor: pointer;"
+                        (click)="editPermissionModuleId(index)">edit</mat-icon>
+                    <mat-icon matSuffix style="color: red; cursor: pointer;"
+                        (click)="deletePermissionModule(index)">delete</mat-icon>
+                </td>
+            </ng-container>
+            <!-- Module Column -->
+            <ng-container matColumnDef="module">
+                <th mat-header-cell *matHeaderCellDef> Módulos </th>
+                <td mat-cell *matCellDef="let element"> {{element.descripcion}} </td>
+            </ng-container>
+
+            <!-- Permissions Column -->
+            <ng-container matColumnDef="permissions">
+                <th mat-header-cell *matHeaderCellDef> Permisos </th>
+                <td mat-cell *matCellDef="let element">
+                    <span *ngFor="let p of element.permisos">
+                        <span  *ngIf="p.activo>0" [ngClass]="{'sihay': p.activo > 0}">{{ p.descripcion }} <br></span> 
+                    </span>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+
+        </table>
+    </div>
+
+    <div class="col-md-12 alnRight pt-5">
+        <button mat-button style="color:#006633;" (click)="submit()">Aceptar</button>
+        <button mat-button color="warn" (click)="mesajeCancelar()">Cancelar</button>
+    </div>
+</ng-template>
+
+<ng-template #view>
+    <div class="row">
+        <div class="col-md-1">
+            <mat-icon style="color: #006633;">security</mat-icon>
+        </div>
+        <div class="col-md-4 alnLeft">
+            <p class="title-modal">Rol {{rolById?.descripcion}} </p>
+            <br>
+           
+        </div>
+    </div>
+    <div class="row">
+        <table mat-table [dataSource]="dataModulesRol">
+           
+            <!-- Permissions Column -->
+            <ng-container matColumnDef="descripcion">
+                <th mat-header-cell *matHeaderCellDef class="th"> <h1> <b>Permisos</b></h1> </th>
+              
+               
+                <td mat-cell *matCellDef="let element" class="td"> {{element.descripcion}} </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+        </table>
+
+    </div>
+    <div class="row">
+        <div class="col-md-12 alnRight">
+            <button mat-button color="warn" (click)="closemodal()">Cerrar</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #delete>
+    <p class="text-forgot">Una vez activado estará disponible para asignar a los usuarios en el sistema y podrán acceder a las funcionalidades correspondientes</p>
+    <div class="row">
+        <div class="col-md-12 alnRight">
+            <button mat-button style="color:#006633;" (click)="deleteRol()">Aceptar</button>
+            <button mat-button color="warn" (click)="mesajeCancelar()">Cancelar</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #asignarAccesso>
+
+    <div>
+        <h1>Agregar módulo</h1>
+        <h3>Módulo</h3>
+
+        <p>Seleccione los módulos a los cuales tendrá acceso el nuero rol junto con sus permisos correspondientes.</p>
+
+        <div class="mt-3" appearance="outline" style="margin: 10px 0;">
+            <select class="form-select" [(ngModel)]="moduloSelect" (ngModelChange)="onSelectChange($event)">
+                <option *ngFor="let module of dataModulesAll" [ngValue]="module">{{ module.descripcion }}</option>
+            </select>
+            
+        </div>
+    </div>
+
+    <p>A continuación, seleccione los permisos que se asignarán a este nuevo rol. Dependiendo del sistema o plataforma
+        que esté utilizando, los permisos pueden variar
+
+        <br> <br> Permisos relacionados:
+    </p>
+
+    <section class="setion-list">
+        <div *ngFor="let permission of permissionsAll">
+            <label class="checkbox-label">
+                {{ permission.descripcion }}
+                <mat-checkbox class="checkbox-input" (change)="onCheckboxChange($event, permission)" [checked]="permission.selected"></mat-checkbox>
+              </label>
+        </div>
+    </section>
+
+    <div class="row">
+        <div class="col-md-6"></div>
+        <div class="col-md-6">
+            <button mat-button style="color:#006633;" (click)="asignarPermisos()"
+                >Aceptar</button>
+            <button mat-button color="warn" (click)="mesajeCancelar()">Cancelar</button>
+        </div>
+    </div>
+
+</ng-template>
+
+<ng-template #activate>
+    <p *ngIf="action== 'activar'" class="text-forgot">Una vez activado estará disponible para asignar a los usuarios en el sistema y podrán acceder a las funcionalidades correspondientes</p>
+    <p *ngIf="action == 'desactivar'" class="text-forgot">Una vez desactivado impedirá a los usuarios asignados a ese rol puedan acceder a las funcionalidades correspondientes</p>
+    <div class="row">
+        <div class="col-md-12 alnRight">
+            <button mat-button style="color:#006633;" (click)="activateRol()">Aceptar</button>
+            <button mat-button color="warn" (click)="mesajeCancelar()">Cancelar</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #messagess>
+    <h1> {{messagges.title}} </h1>
+    <p> {{messagges.contend}} </p>
+    <div class="col-md-12 alnRight">
+        <button mat-button style="color:#006633;" (click)="closemodal()">Aceptar</button>
+        <button mat-button color="warn" (click)="closeOneModal()">Cancelar</button>
+    </div>
+</ng-template>
+
+<ng-template #modalSinBtn>
+    <div (click)="closemodal()">
+        <h1> {{messagges.title}} </h1>
+        <p> {{messagges.contend}} </p>
+    </div>
+</ng-template>
+
+<!--Acciones-->
+<ng-template #accions>
+    <div style="text-align: left; margin-top: -10%;">
+        <span (click)="clickView(elementSelet )" class="btn-content subtitle hover"><mat-icon matSuffix
+                style="color: blue; cursor: pointer;margin-right: 1%;"
+                >visibility</mat-icon>Ver</span><br>
+
+        <span (click)="clickAddEdit(elementSelet)" class="btn-content subtitle hover"><mat-icon matSuffix
+                style="color: green; cursor: pointer;margin-right: 1%"
+                >edit</mat-icon>Editar</span><br>
+
+        <span (click)="clickBlockUnblock(elementSelet)" class="btn-content subtitle hover"><mat-icon matSuffix
+                style="color: orange; cursor: pointer;margin-right: 1%"
+                >block</mat-icon>Activar/Inactivar</span><br>
+        <span (click)="clickDelete(elementSelet)" class="btn-content subtitle hover"><mat-icon matSuffix
+                style="color: red; cursor: pointer;margin-right: 1%"
+                >delete</mat-icon>Eliminar</span><br>
+    </div>
+</ng-template>
+<!--/Acciones-->

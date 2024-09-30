@@ -1,0 +1,38 @@
+.container {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.left-panel {
+    flex: 1;
+    height: 100%;
+    background-color: #f1f1f1;
+    /* Color de fondo de la izquierda */
+}
+
+.left-panel img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Ajustar la imagen al tamaño del contenedor */
+}
+
+.right-panel {
+    flex: 1;
+    padding: 0px 150px 0px 150px;
+}
+
+@media (max-width: 767px) {
+    .left-panel img {
+        height: 150px;
+        /* Permite que la altura de la imagen se ajuste automáticamente */
+        max-width: 100%;
+        /* Ajusta el ancho máximo de la imagen al 100% del contenedor */
+    }
+    .right-panel {
+        flex: 1;
+        padding: 50px 50px 0px 50px;
+    }
+}
